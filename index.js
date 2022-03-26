@@ -17,6 +17,7 @@ const PORT = process.env.PORT || 3001;
 
 // app.use(isAuth);
 app.use(cors());
+app.use(express.json());
 
 const io = new Server(server, {
   cors: {
@@ -26,16 +27,16 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  console.log(`user connected ${socket.handshake.query.username}`);
+  console.log(`user connected ${socket.handshake.query.userPhonenum}`);
   console.log(socket.id);
-  const id = socket.handshake.query.username;
-  socket.join(id);
+  const phonenum = socket.handshake.query.userPhonenum;
+  socket.join(phonenum);
 
   socket.on("send-message", (messageData) => {
-    console.log(messageData.recepientId);
+    console.log(messageData.recepient);
     console.log("messagedata pas send", messageData);
     socket.broadcast
-      .to(messageData.recepientId)
+      .to(messageData.recepient)
       .emit("receive-message", messageData);
     console.log(messageData.recepientId);
 
@@ -57,9 +58,21 @@ mongoose
     console.log(error);
   });
 
-app.get("/", (req, res) => {
+app.get("/backup", (req, res) => {
   res.send("hola world");
 });
+
+app.use((error, req, res, next) => {
+  if (res.headersSent) {
+    return next(error);
+  }
+  const { message = "something is not right", status = 500 } = error;
+  res.status(status).send(message);
+});
+app.use((req, res) => {
+  res.status(404).send("NOT FOUND!");
+});
+
 server.listen(PORT, () => {
   console.log(`on port ${PORT}`);
 });
