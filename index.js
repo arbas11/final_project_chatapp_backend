@@ -10,6 +10,10 @@ const app = express();
 const http = require("http");
 const server = http.createServer(app);
 
+// const authRoutes = require('./routes/auth')
+const contactRoutes = require("./routes/contact");
+const userRoutes = require("./routes/user");
+const historyRoutes = require("./routes/history");
 const User = require("./models/user");
 const isAuth = require("./middleware/auth");
 
@@ -33,14 +37,9 @@ io.on("connection", (socket) => {
   socket.join(phonenum);
 
   socket.on("send-message", (messageData) => {
-    console.log(messageData.recepient);
-    console.log("messagedata pas send", messageData);
     socket.broadcast
       .to(messageData.recepient)
       .emit("receive-message", messageData);
-    console.log(messageData.recepientId);
-
-    console.log("messagedata pas recive", messageData);
   });
 
   socket.on("disconnect", () => {
@@ -58,17 +57,23 @@ mongoose
     console.log(error);
   });
 
-app.get("/backup", (req, res) => {
+// app.use("/api", authRoutes);
+app.use("/api/user", userRoutes);
+app.use("/api/contact", contactRoutes);
+app.use("/api/history", historyRoutes);
+
+app.get("/test", (req, res) => {
   res.send("hola world");
 });
 
-app.use((error, req, res, next) => {
-  if (res.headersSent) {
-    return next(error);
-  }
-  const { message = "something is not right", status = 500 } = error;
-  res.status(status).send(message);
-});
+// app.use((error, req, res, next) => {
+//   if (res.headersSent) {
+//     return next(error);
+//   }
+//   const { message = "something is not right", status = 500 } = error;
+//   res.status(status).send(message);
+// });
+
 app.use((req, res) => {
   res.status(404).send("NOT FOUND!");
 });

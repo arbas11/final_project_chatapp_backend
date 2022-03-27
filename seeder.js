@@ -1,17 +1,17 @@
-const mongoose = require("mongoose");
 const Contact = require("./models/contact");
 const History = require("./models/history");
 const User = require("./models/user");
+const mongoose = require("mongoose");
 
-mongoose
-  .connect("mongodb://localhost:27017/chat_app_dibimbing")
-  .then(() => {
-    console.log("connected to database");
-  })
-  .catch((error) => {
-    console.log("connection error");
-    console.log(error);
-  });
+// mongoose
+//   .connect("mongodb://localhost:27017/chat_app_dibimbing")
+//   .then(() => {
+//     console.log("connected to database");
+//   })
+//   .catch((error) => {
+//     console.log("connection error");
+//     console.log(error);
+//   });
 //--------------------------------------------------------
 //::::::::::delete list di parentnya:::::
 const deleteOneContact = async (id, phone) => {
@@ -147,7 +147,15 @@ const addHistoryToContact = async (oneHistory) => {
 // addHistoryToContact(oneHistory);
 //--------------------------------------------------------
 //show one contact history:
-
+const showContactHistory = async (userNum, contactNum) => {
+  const history = await History.findOne({
+    owner: userNum,
+    contact: contactNum,
+  });
+  console.log(history);
+};
+const { owner, contact } = oneHistory;
+showContactHistory(owner, contact);
 //const add = new User({
 //   phone: "0811167540",
 //   username: "arbas",
