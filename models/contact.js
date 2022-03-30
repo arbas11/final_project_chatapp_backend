@@ -7,6 +7,9 @@ const contactSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    contactName: {
+      type: String,
+    },
     contactNumber: {
       type: String,
       required: true,

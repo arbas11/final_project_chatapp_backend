@@ -3,21 +3,27 @@ const History = require("./models/history");
 const User = require("./models/user");
 const mongoose = require("mongoose");
 
-// mongoose
-//   .connect("mongodb://localhost:27017/chat_app_dibimbing")
-//   .then(() => {
-//     console.log("connected to database");
-//   })
-//   .catch((error) => {
-//     console.log("connection error");
-//     console.log(error);
-//   });
+mongoose
+  .connect("mongodb://localhost:27017/chat_app_dibimbing")
+  .then(() => {
+    console.log("connected to database");
+  })
+  .catch((error) => {
+    console.log("connection error");
+    console.log(error);
+  });
+//--------------------------------------------------------
+
+const deleteManyHistory = async (owner, contact) => {
+  await History.deleteMany({ owner: owner, contact: contact });
+};
+// deleteManyHistory("03", "02");
 //--------------------------------------------------------
 //::::::::::delete list di parentnya:::::
 const deleteOneContact = async (id, phone) => {
   await Contact.findByIdAndUpdate(id, { $pull: { history: phone } });
 };
-// deleteOneContact("623ee4e628803f9788309542", "623eeddf24ba22f441348003");
+// deleteOneContact("623ee80506079ad912659468", "62433bd0da575ab833542d19");
 //::::::::::delete actual contactnya:::::
 const deleteActualContact = async (id) => {
   await Contact.findByIdAndDelete(id);
@@ -155,7 +161,7 @@ const showContactHistory = async (userNum, contactNum) => {
   console.log(history);
 };
 const { owner, contact } = oneHistory;
-showContactHistory(owner, contact);
+// showContactHistory(owner, contact);
 //const add = new User({
 //   phone: "0811167540",
 //   username: "arbas",

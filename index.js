@@ -16,6 +16,7 @@ const userRoutes = require("./routes/user");
 const historyRoutes = require("./routes/history");
 const User = require("./models/user");
 const isAuth = require("./middleware/auth");
+const { addHistoryReceiver, addHistorySender } = require("./handlers/history");
 
 const PORT = process.env.PORT || 3001;
 
@@ -36,10 +37,17 @@ io.on("connection", (socket) => {
   const phonenum = socket.handshake.query.userPhonenum;
   socket.join(phonenum);
 
-  socket.on("send-message", (messageData) => {
+  socket.on("send-message", async (messageData) => {
     socket.broadcast
       .to(messageData.recepient)
       .emit("receive-message", messageData);
+    console.log("send-message dalam index", messageData);
+    await addHistoryReceiver(messageData)
+      .then((data) => console.log("dari then data", data))
+      .catch((e) => console.log(e));
+    await addHistorySender(messageData)
+      .then((data) => console.log("dari then data", data))
+      .catch((e) => console.log(e));
   });
 
   socket.on("disconnect", () => {
@@ -66,13 +74,13 @@ app.get("/test", (req, res) => {
   res.send("hola world");
 });
 
-// app.use((error, req, res, next) => {
-//   if (res.headersSent) {
-//     return next(error);
-//   }
-//   const { message = "something is not right", status = 500 } = error;
-//   res.status(status).send(message);
-// });
+app.use((error, req, res, next) => {
+  if (res.headersSent) {
+    return next(error);
+  }
+  const { message = "something is not right", status = 500 } = error;
+  res.status(status).send(message);
+});
 
 app.use((req, res) => {
   res.status(404).send("NOT FOUND!");

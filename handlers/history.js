@@ -1,17 +1,5 @@
 const History = require("../models/history");
-
-//database connection:
-const mongoose = require("mongoose");
-
-mongoose
-  .connect("mongodb://localhost:27017/chat_app_dibimbing")
-  .then(() => {
-    console.log("connected to database");
-  })
-  .catch((error) => {
-    console.log("connection error");
-    console.log(error);
-  });
+const Contact = require("../models/contact");
 
 //:::::::::::one message history format:::::::::::::
 //time setter function
@@ -34,32 +22,90 @@ const oneHistory = {
 
 //--------------------------------------------------------
 //add history to contact:
-const addHistoryToContact = async (oneHistory) => {
-  const { owner, contact } = oneHistory;
-  const contactToAdd = await Contact.findOne({
-    userPhonenum: owner,
-    contactNumber: contact,
-  });
-  const newHistory = new History(oneHistory);
-  contactToAdd.history.push(newHistory);
+// owner: "0811167540"
+// contact: "08170167540"
+// author: "0811167540"
+// recepient: "08170167540"
+// message: "Halo brother gimana kabarnya?"
+// time: "17:42"
 
-  await newHistory.save();
-  await contactToAdd.save();
-  console.log("contact yg di add", contactToAdd);
-  console.log("history yg di add", newHistory);
+const addHistoryToContact = async (req, res, next) => {
+  try {
+    const { owner, contact } = req.body;
+    const contactToAdd = await Contact.findOne({
+      userPhonenum: owner,
+      contactNumber: contact,
+    });
+    const newHistory = new History(req.body);
+    contactToAdd.history.push(newHistory);
+
+    await newHistory.save();
+    await contactToAdd.save();
+  } catch (e) {
+    next(e);
+  }
+};
+const addHistorySender = async (messageData) => {
+  try {
+    const { owner, contact } = messageData;
+    const contactToAdd = await Contact.findOne({
+      userPhonenum: owner,
+      contactNumber: contact,
+    });
+    const newHistory = new History(messageData);
+    contactToAdd.history.push(newHistory);
+
+    await newHistory.save();
+    await contactToAdd.save();
+  } catch (e) {
+    next(e);
+  }
+};
+const addHistoryReceiver = async (messageData) => {
+  try {
+    const { owner, contact } = messageData;
+    const contactToAdd = await Contact.findOne({
+      userPhonenum: contact,
+      contactNumber: owner,
+    });
+    const receiveMsgData = {
+      owner: messageData.contact,
+      contact: messageData.owner,
+      author: messageData.author,
+      recepient: messageData.recepient,
+      message: messageData.message,
+      time: messageData.time,
+    };
+    const newHistory = new History(receiveMsgData);
+    contactToAdd.history.push(newHistory);
+
+    await newHistory.save();
+    await contactToAdd.save();
+  } catch (e) {
+    next(e);
+  }
 };
 // addHistoryToContact(oneHistory);
 //--------------------------------------------------------
 //show one contact history:
 
-const showContactHistory = async (userNum, contactNum) => {
-  const history = await History.find({
-    owner: userNum,
-    contact: contactNum,
-  });
-  console.log(history);
+const showContactHistory = async (req, res, next) => {
+  const { userNumber, contactNumber } = req.body;
+  await History.find({
+    owner: userNumber,
+    contact: contactNumber,
+  })
+    .then((data) => {
+      res.status(200).json(data);
+    })
+    .catch((e) => {
+      res.status(400).send("something went south");
+    });
 };
-const { owner, contact } = oneHistory;
-// showContactHistory(owner, contact);
 
-module.exports = { addHistoryToContact, showContactHistory };
+module.exports = {
+  addHistoryToContact,
+  showContactHistory,
+  addHistoryReceiver,
+  addHistorySender,
+};

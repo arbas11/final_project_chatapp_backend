@@ -1,45 +1,55 @@
 const Contact = require("../models/contact");
+const User = require("../models/user");
 
-//:::::::::::contact related function:::::::::::::
-const dataNeeded = {
-  userPhonenum: "08170167540",
-  displayName: "ario baskoro",
-  contactNumber: "0811167540",
-};
-//--------------------------------------------------------
-//add contact to user
-
-const addContact = async (userToAdd) => {
-  const { userPhonenum, contactNumber } = userToAdd;
-  const owner = await User.findOne({ userPhonenum: userPhonenum });
-  const toAdd = await User.findOne({ userPhonenum: contactNumber });
-  const contactsToAdd = new Contact({
-    userPhonenum: owner.userPhonenum,
-    contactNumber: toAdd.userPhonenum,
-  });
-
-  owner.contacts.push(contactsToAdd);
-  contactsToAdd.owner = owner.userPhonenum;
-  contactsToAdd.contactData = toAdd;
-
-  await contactsToAdd.save();
-  await owner.save();
-};
-
-// addContact(dataNeeded);
 //--------------------------------------------------------
 //get all user contact:
-const getAllUserContact = async (userData) => {
-  const { userPhonenum } = userData;
-  const allContact = await Contact.find({ owner: userPhonenum }).populate(
-    "contactData"
-  );
-  for (contact of allContact) {
-    console.log(contact.contactData);
-  }
+const getAllUserContact = async (req, res, next) => {
+  const { userPhonenum } = req.body;
+  await Contact.find({ owner: userPhonenum })
+    .populate(
+      "contactData",
+      "displayName userPhonenum profilePic status isOnline"
+    )
+    .then((data) => {
+      res.status(200).json(data);
+    })
+    .catch((e) => {
+      res.status(400).send("something went south");
+    });
 };
 
 // getAllUserContact(dataNeeded);
+//--------------------------------------------------------
+//add contact to user
+
+const addContact = async (req, res, next) => {
+  try {
+    const { userPhonenum, contactNumber, contactName } = req.body;
+    const owner = await User.findOne({ userPhonenum: userPhonenum });
+    const toAdd = await User.findOne({ userPhonenum: contactNumber });
+    const contactsToAdd = new Contact({
+      owner: owner.userPhonenum,
+      contactNumber: toAdd.userPhonenum,
+      contactName: contactName,
+    });
+    contactsToAdd.owner = owner.userPhonenum;
+    contactsToAdd.contactData = toAdd;
+    owner.contacts.push(contactsToAdd);
+    await contactsToAdd.save();
+    await owner
+      .save()
+      .then((data) => {
+        return res.status(200).json(data);
+      })
+      .catch((e) => {
+        next(e);
+      });
+  } catch {
+    return next(e);
+  }
+};
+
+// addContact(dataNeeded);
 //--------------------------------------------------------
 //get one contact:
 const getOneUserContact = async (userData) => {
@@ -48,7 +58,6 @@ const getOneUserContact = async (userData) => {
     owner: userPhonenum,
     contactNumber: contactNumber,
   }).populate("contactData");
-  console.log(oneContactData);
 };
 // getOneUserContact(dataNeeded);
 //--------------------------------------------------------
