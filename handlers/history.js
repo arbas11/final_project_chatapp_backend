@@ -1,5 +1,6 @@
 const History = require("../models/history");
 const Contact = require("../models/contact");
+const AppError = require("../utilities/appError");
 
 //:::::::::::one message history format:::::::::::::
 //time setter function
@@ -58,7 +59,7 @@ const addHistorySender = async (messageData) => {
     await newHistory.save();
     await contactToAdd.save();
   } catch (e) {
-    next(e);
+    throw new AppError("something wrong, try again later", 500);
   }
 };
 const addHistoryReceiver = async (messageData) => {
@@ -81,8 +82,9 @@ const addHistoryReceiver = async (messageData) => {
 
     await newHistory.save();
     await contactToAdd.save();
+    return newHistory;
   } catch (e) {
-    next(e);
+    throw new AppError("User has not add your contact", 500);
   }
 };
 // addHistoryToContact(oneHistory);
@@ -91,15 +93,22 @@ const addHistoryReceiver = async (messageData) => {
 
 const showContactHistory = async (req, res, next) => {
   const { userNumber, contactNumber } = req.body;
+  console.log("req body dari hist handler", req.body);
+  const q = parseInt(req.body.q);
+  const page = parseInt(req.body.page);
+  console.log("page dalam history handler", page);
   await History.find({
     owner: userNumber,
     contact: contactNumber,
   })
+    .limit(q)
+    .skip(page)
+    .sort({ createdAt: "desc" })
     .then((data) => {
       res.status(200).json(data);
     })
     .catch((e) => {
-      res.status(400).send("something went south");
+      res.status(500).send("something wrong please comeback soon");
     });
 };
 

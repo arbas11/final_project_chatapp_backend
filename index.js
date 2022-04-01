@@ -17,6 +17,7 @@ const historyRoutes = require("./routes/history");
 const User = require("./models/user");
 const isAuth = require("./middleware/auth");
 const { addHistoryReceiver, addHistorySender } = require("./handlers/history");
+const AppError = require("./utilities/appError");
 
 const PORT = process.env.PORT || 3001;
 
@@ -41,7 +42,6 @@ io.on("connection", (socket) => {
     socket.broadcast
       .to(messageData.recepient)
       .emit("receive-message", messageData);
-    console.log("send-message dalam index", messageData);
     await addHistoryReceiver(messageData)
       .then((data) => console.log("dari then data", data))
       .catch((e) => console.log(e));

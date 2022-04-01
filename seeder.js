@@ -3,21 +3,21 @@ const History = require("./models/history");
 const User = require("./models/user");
 const mongoose = require("mongoose");
 
-mongoose
-  .connect("mongodb://localhost:27017/chat_app_dibimbing")
-  .then(() => {
-    console.log("connected to database");
-  })
-  .catch((error) => {
-    console.log("connection error");
-    console.log(error);
-  });
+// mongoose
+//   .connect("mongodb://localhost:27017/chat_app_dibimbing")
+//   .then(() => {
+//     console.log("connected to database");
+//   })
+//   .catch((error) => {
+//     console.log("connection error");
+//     console.log(error);
+//   });
 //--------------------------------------------------------
 
 const deleteManyHistory = async (owner, contact) => {
   await History.deleteMany({ owner: owner, contact: contact });
 };
-// deleteManyHistory("03", "02");
+// deleteManyHistory("02", "03");
 //--------------------------------------------------------
 //::::::::::delete list di parentnya:::::
 const deleteOneContact = async (id, phone) => {
