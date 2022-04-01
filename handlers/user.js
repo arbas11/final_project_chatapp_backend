@@ -1,4 +1,5 @@
 const User = require("../models/user");
+const AppError = require("../utilities/appError");
 
 //:::::::::::user related function:::::::::::::
 //create user function
@@ -33,5 +34,22 @@ const findUserByPhone = async (req, res) => {
 
 // findUserByPhone(dataNeeded);
 //--------------------------------------------------------
+//update user displayName, profilePic
+const updateUserData = async (req, res) => {
+  const { userPhonenum, displayName, profilePic, userStatus } = req.body;
+  console.log(req.body, "req.body dari update user");
+  await User.findOneAndUpdate(
+    { userPhonenum: userPhonenum },
+    { displayName: displayName, profilePic: profilePic, status: userStatus }
+  )
+    .then((data) => {
+      console.log("data dari update user handles", data);
+      res.status(200).json(data);
+    })
+    .catch((e) => {
+      console.log("error dari catch update user", e);
+      res.status(400).send("something went south");
+    });
+};
 
-module.exports = { findUserByPhone, createUser };
+module.exports = { findUserByPhone, createUser, updateUserData };

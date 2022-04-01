@@ -10,7 +10,7 @@ const app = express();
 const http = require("http");
 const server = http.createServer(app);
 
-// const authRoutes = require('./routes/auth')
+const authRoutes = require("./routes/auth");
 const contactRoutes = require("./routes/contact");
 const userRoutes = require("./routes/user");
 const historyRoutes = require("./routes/history");
@@ -65,7 +65,7 @@ mongoose
     console.log(error);
   });
 
-// app.use("/api", authRoutes);
+app.use("/api", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/history", historyRoutes);

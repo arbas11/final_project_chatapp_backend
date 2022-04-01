@@ -37,6 +37,10 @@ const userSchema = new mongoose.Schema(
   }
 );
 
+userSchema.methods.toggleIsOnline = function () {
+  this.isOnline = !this.isOnline;
+  return this.save();
+};
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;

@@ -12,23 +12,8 @@ const time = () => {
   currentMinutes = ("0" + currentMinutes).slice(-2);
   return currentHours + ":" + currentMinutes;
 };
-const oneHistory = {
-  owner: "0811167540",
-  contact: "08170167540",
-  author: "08170167540",
-  recepient: "0811167540",
-  message: "Alhamdulilah baik nih lu gimana kabarnya?",
-  time: time(),
-};
 
 //--------------------------------------------------------
-//add history to contact:
-// owner: "0811167540"
-// contact: "08170167540"
-// author: "0811167540"
-// recepient: "08170167540"
-// message: "Halo brother gimana kabarnya?"
-// time: "17:42"
 
 const addHistoryToContact = async (req, res, next) => {
   try {
@@ -103,7 +88,6 @@ const showContactHistory = async (req, res, next) => {
   })
     .limit(q)
     .skip(page)
-    .sort({ createdAt: "desc" })
     .then((data) => {
       res.status(200).json(data);
     })
