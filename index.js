@@ -17,7 +17,8 @@ const historyRoutes = require("./routes/history");
 const isAuth = require("./middleware/auth");
 const { addHistoryReceiver, addHistorySender } = require("./handlers/history");
 const { urlencoded } = require("express");
-
+const dbUrl = process.env.DB_URL;
+const localDB = "mongodb://localhost:27017/chat_app_dibimbing";
 const PORT = process.env.PORT || 3001;
 
 app.use(cors());
@@ -55,7 +56,7 @@ io.on("connection", (socket) => {
 });
 
 mongoose
-  .connect("mongodb://localhost:27017/chat_app_dibimbing")
+  .connect(dbUrl)
   .then(() => {
     console.log("connected to database");
   })
