@@ -68,8 +68,6 @@ const addHistoryReceiver = async (messageData) => {
 
 const showContactHistory = async (req, res, next) => {
   const { userEmail, contactEmail } = req.body;
-  // const q = parseInt(req.body.q);
-  // const skip = parseInt(req.body.skip);
   await History.find({
     owner: userEmail,
     contact: contactEmail,

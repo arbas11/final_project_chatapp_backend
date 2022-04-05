@@ -34,7 +34,6 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  console.log(`user connected dari socket ${socket.handshake.query.userEmail}`);
   const userEmail = socket.handshake.query.userEmail;
   socket.join(userEmail);
 
@@ -69,10 +68,6 @@ app.use("/api", isAuth, authRoutes);
 app.use("/api/user", isAuth, userRoutes);
 app.use("/api/contact", isAuth, contactRoutes);
 app.use("/api/history", isAuth, historyRoutes);
-
-app.get("/test", (req, res) => {
-  res.send("hola world");
-});
 
 app.use((error, req, res, next) => {
   if (res.headersSent) {

@@ -90,17 +90,14 @@ const deleteOneContact = async (req, res, next) => {
 //update contact name
 const updateContactName = async (req, res) => {
   const { userEmail, contactEmail, newContactName } = req.body;
-  console.log(req.body, "req.body dari update user");
   await Contact.findOneAndUpdate(
     { owner: userEmail, contactEmail: contactEmail },
     { contactName: newContactName }
   )
     .then((data) => {
-      console.log("data dari update user handles", data);
       res.status(200).json(data);
     })
     .catch((e) => {
-      console.log("error dari catch update user", e);
       res.status(400).send("something went south");
     });
 };
