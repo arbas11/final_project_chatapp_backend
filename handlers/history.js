@@ -3,24 +3,14 @@ const Contact = require("../models/contact");
 const AppError = require("../utilities/appError");
 
 //:::::::::::one message history format:::::::::::::
-//time setter function
-const time = () => {
-  const date = new Date();
-  let currentHours = date.getHours();
-  let currentMinutes = date.getMinutes();
-  currentHours = ("0" + currentHours).slice(-2);
-  currentMinutes = ("0" + currentMinutes).slice(-2);
-  return currentHours + ":" + currentMinutes;
-};
-
 //--------------------------------------------------------
 
 const addHistoryToContact = async (req, res, next) => {
   try {
     const { owner, contact } = req.body;
     const contactToAdd = await Contact.findOne({
-      userPhonenum: owner,
-      contactNumber: contact,
+      userEmail: owner,
+      contactEmail: contact,
     });
     const newHistory = new History(req.body);
     contactToAdd.history.push(newHistory);
@@ -35,8 +25,8 @@ const addHistorySender = async (messageData) => {
   try {
     const { owner, contact } = messageData;
     const contactToAdd = await Contact.findOne({
-      userPhonenum: owner,
-      contactNumber: contact,
+      userEmail: owner,
+      contactEmail: contact,
     });
     const newHistory = new History(messageData);
     contactToAdd.history.push(newHistory);
@@ -51,8 +41,8 @@ const addHistoryReceiver = async (messageData) => {
   try {
     const { owner, contact } = messageData;
     const contactToAdd = await Contact.findOne({
-      userPhonenum: contact,
-      contactNumber: owner,
+      userEmail: contact,
+      contactEmail: owner,
     });
     const receiveMsgData = {
       owner: messageData.contact,
@@ -77,17 +67,13 @@ const addHistoryReceiver = async (messageData) => {
 //show one contact history:
 
 const showContactHistory = async (req, res, next) => {
-  const { userNumber, contactNumber } = req.body;
-  console.log("req body dari hist handler", req.body);
-  const q = parseInt(req.body.q);
-  const page = parseInt(req.body.page);
-  console.log("page dalam history handler", page);
+  const { userEmail, contactEmail } = req.body;
+  // const q = parseInt(req.body.q);
+  // const skip = parseInt(req.body.skip);
   await History.find({
-    owner: userNumber,
-    contact: contactNumber,
+    owner: userEmail,
+    contact: contactEmail,
   })
-    .limit(q)
-    .skip(page)
     .then((data) => {
       res.status(200).json(data);
     })

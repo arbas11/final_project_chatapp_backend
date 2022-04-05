@@ -1,19 +1,32 @@
 const User = require("../models/user");
 const AppError = require("../utilities/appError");
 
-const updateUserOnline = async (req, res) => {
-  const { userNumber } = req.body;
-  const user = await User.findOne({ userPhonenum: userNumber });
-  await user
-    .toggleIsOnline()
-    .then((data) => {
-      console.log("data dari update user handles", data);
-      res.status(200).json(data);
-    })
-    .catch((e) => {
-      console.log("error dari catch update user", e);
-      res.status(400).send("something went south");
-    });
+const userLogin = async (req, res) => {
+  const { userEmail, displayName, profilePic } = req.body;
+  try {
+    const user = await User.findOne({ userEmail: userEmail });
+    if (user) {
+      res.status(200).json(user);
+    } else {
+      const newUser = new User({
+        userEmail: userEmail,
+        displayName: displayName,
+        profilePic: profilePic,
+      });
+      await newUser.save().then((data) => {
+        return res.status(200).json(data);
+      });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(500).json({ message: "something went wrong" });
+  }
 };
 
-module.exports = { updateUserOnline };
+const userLogout = async (req, res) => {
+  const { userEmail } = req.body;
+  await User.findOne({ userEmail: userEmail }).then((res) => {
+    res.toggleIsOnline();
+  });
+};
+module.exports = { userLogin, userLogout };

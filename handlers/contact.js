@@ -6,12 +6,9 @@ const AppError = require("../utilities/appError");
 //--------------------------------------------------------
 //get all user contact:
 const getAllUserContact = async (req, res, next) => {
-  const { userPhonenum } = req.body;
-  await Contact.find({ owner: userPhonenum })
-    .populate(
-      "contactData",
-      "displayName userPhonenum profilePic status isOnline"
-    )
+  const { userEmail } = req.body;
+  await Contact.find({ owner: userEmail })
+    .populate("contactData", "displayName userEmail profilePic status isOnline")
     .then((data) => {
       res.status(200).json(data);
     })
@@ -26,24 +23,24 @@ const getAllUserContact = async (req, res, next) => {
 
 const addContact = async (req, res, next) => {
   try {
-    const { userPhonenum, contactNumber, contactName } = req.body;
-    const owner = await User.findOne({ userPhonenum: userPhonenum });
-    const toAdd = await User.findOne({ userPhonenum: contactNumber });
+    const { userEmail, contactEmail, contactName } = req.body;
+    const owner = await User.findOne({ userEmail: userEmail });
+    const toAdd = await User.findOne({ userEmail: contactEmail });
     if (!toAdd) {
       throw new AppError("contact doesn't exist", 400);
     }
     const contactsToAdd = new Contact({
-      owner: owner.userPhonenum,
-      contactNumber: toAdd.userPhonenum,
+      owner: owner.userEmail,
+      contactEmail: toAdd.userEmail,
       contactName: contactName,
     });
-    contactsToAdd.owner = owner.userPhonenum;
+    contactsToAdd.owner = owner.userEmail;
     contactsToAdd.contactData = toAdd;
     owner.contacts.push(contactsToAdd);
     await contactsToAdd.save().then((data) => {
       return res
         .status(200)
-        .json({ name: data.contactName, number: data.contactNumber });
+        .json({ name: data.contactName, email: data.contactEmail });
     });
     await owner
       .save()
@@ -60,20 +57,20 @@ const addContact = async (req, res, next) => {
 //--------------------------------------------------------
 //get one contact:
 const getOneUserContact = async (userData) => {
-  const { userPhonenum, contactNumber } = userData;
+  const { userEmail, contactEmail } = userData;
   const oneContactData = await Contact.findOne({
-    owner: userPhonenum,
-    contactNumber: contactNumber,
+    owner: userEmail,
+    contactNumber: contactEmail,
   }).populate("contactData");
 };
 // getOneUserContact(dataNeeded);
 //--------------------------------------------------------
 //delete one contact
 const deleteOneContact = async (req, res, next) => {
-  const { userNumber, contactNumber, contactId } = req.body;
+  const { userEmail, contactEmail, contactId } = req.body;
   await Contact.findOneAndDelete({
-    owner: userNumber,
-    contactNumber: contactNumber,
+    owner: userEmail,
+    contactNumber: contactEmail,
   })
     .then((data) => {
       console.log(data);
@@ -84,18 +81,18 @@ const deleteOneContact = async (req, res, next) => {
       res.status(500).json(e);
     });
   await User.findOneAndUpdate(
-    { userPhonenum: userNumber },
+    { userEmail: userEmail },
     { $pull: { contacts: contactId } }
   );
-  await History.deleteMany({ owner: userNumber, contact: contactNumber });
+  await History.deleteMany({ owner: userEmail, contact: contactEmail });
 };
 //--------------------------------------------------------
 //update contact name
 const updateContactName = async (req, res) => {
-  const { userPhonenum, contactNumber, newContactName } = req.body;
+  const { userEmail, contactEmail, newContactName } = req.body;
   console.log(req.body, "req.body dari update user");
   await Contact.findOneAndUpdate(
-    { owner: userPhonenum, contactNumber: contactNumber },
+    { owner: userEmail, contactEmail: contactEmail },
     { contactName: newContactName }
   )
     .then((data) => {

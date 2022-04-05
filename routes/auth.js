@@ -4,6 +4,7 @@ const catchAsync = require("../utilities/catchAsync");
 
 const router = express.Router({ mergeParams: true });
 
-router.post("/logout", catchAsync(auth.updateUserOnline));
+router.post("/login", catchAsync(auth.userLogin));
+router.post("/logout", catchAsync(auth.userLogout));
 
 module.exports = router;

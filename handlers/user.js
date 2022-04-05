@@ -21,9 +21,10 @@ const createUser = async (req, res, next) => {
 // createUser(dataNeeded);
 //--------------------------------------------------------
 //find one user by phone number
-const findUserByPhone = async (req, res) => {
-  const { userPhonenum } = req.body;
-  await User.findOne({ userPhonenum: userPhonenum })
+const findUserByEmail = async (req, res) => {
+  console.log("find user by phone num req.headers", req.headers);
+  const { userEmail } = req.body;
+  await User.findOne({ userEmail: userEmail })
     .then((data) => {
       res.status(200).json(data);
     })
@@ -36,10 +37,10 @@ const findUserByPhone = async (req, res) => {
 //--------------------------------------------------------
 //update user displayName, profilePic
 const updateUserData = async (req, res) => {
-  const { userPhonenum, displayName, profilePic, userStatus } = req.body;
+  const { userEmail, displayName, profilePic, userStatus } = req.body;
   console.log(req.body, "req.body dari update user");
   await User.findOneAndUpdate(
-    { userPhonenum: userPhonenum },
+    { userEmail: userEmail },
     { displayName: displayName, profilePic: profilePic, status: userStatus }
   )
     .then((data) => {
@@ -52,4 +53,4 @@ const updateUserData = async (req, res) => {
     });
 };
 
-module.exports = { findUserByPhone, createUser, updateUserData };
+module.exports = { findUserByEmail, createUser, updateUserData };

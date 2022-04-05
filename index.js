@@ -14,16 +14,16 @@ const authRoutes = require("./routes/auth");
 const contactRoutes = require("./routes/contact");
 const userRoutes = require("./routes/user");
 const historyRoutes = require("./routes/history");
-const User = require("./models/user");
 const isAuth = require("./middleware/auth");
 const { addHistoryReceiver, addHistorySender } = require("./handlers/history");
-const AppError = require("./utilities/appError");
+const { urlencoded } = require("express");
 
 const PORT = process.env.PORT || 3001;
 
-// app.use(isAuth);
 app.use(cors());
 app.use(express.json());
+app.use(urlencoded({ extended: true }));
+app.use(isAuth);
 
 const io = new Server(server, {
   cors: {
@@ -33,20 +33,19 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  console.log(`user connected ${socket.handshake.query.userPhonenum}`);
-  console.log(socket.id);
-  const phonenum = socket.handshake.query.userPhonenum;
-  socket.join(phonenum);
+  console.log(`user connected dari socket ${socket.handshake.query.userEmail}`);
+  const userEmail = socket.handshake.query.userEmail;
+  socket.join(userEmail);
 
   socket.on("send-message", async (messageData) => {
     socket.broadcast
       .to(messageData.recepient)
       .emit("receive-message", messageData);
     await addHistoryReceiver(messageData)
-      .then((data) => console.log("dari then data", data))
+      .then((data) => console.log("message received"))
       .catch((e) => console.log(e));
     await addHistorySender(messageData)
-      .then((data) => console.log("dari then data", data))
+      .then((data) => console.log("message send"))
       .catch((e) => console.log(e));
   });
 
@@ -65,10 +64,10 @@ mongoose
     console.log(error);
   });
 
-app.use("/api", authRoutes);
-app.use("/api/user", userRoutes);
-app.use("/api/contact", contactRoutes);
-app.use("/api/history", historyRoutes);
+app.use("/api", isAuth, authRoutes);
+app.use("/api/user", isAuth, userRoutes);
+app.use("/api/contact", isAuth, contactRoutes);
+app.use("/api/history", isAuth, historyRoutes);
 
 app.get("/test", (req, res) => {
   res.send("hola world");
