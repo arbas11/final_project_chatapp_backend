@@ -28,7 +28,7 @@ app.use(isAuth);
 
 const io = new Server(server, {
   cors: {
-    origin: "https://stormy-tundra-60287.herokuapp.com/",
+    origin: "https://ngocech.herokuapp.com",
     methods: ["GET", "POST"],
   },
 });
