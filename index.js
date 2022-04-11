@@ -17,8 +17,13 @@ const historyRoutes = require("./routes/history");
 const isAuth = require("./middleware/auth");
 const { addHistoryReceiver, addHistorySender } = require("./handlers/history");
 const { urlencoded } = require("express");
+
 const dbUrl = process.env.DB_URL;
-const localDB = "mongodb://localhost:27017/chat_app_dibimbing";
+// const localDB = "mongodb://localhost:27017/chat_app_dibimbing";
+const orginProdUrl = "https://ngocech.herokuapp.com";
+// const originDevUrl = "http://localhost:3000";
+const originUrl = originDevUrl;
+
 const PORT = process.env.PORT || 3001;
 
 app.use(cors());
@@ -28,7 +33,7 @@ app.use(isAuth);
 
 const io = new Server(server, {
   cors: {
-    origin: "https://ngocech.herokuapp.com",
+    origin: originUrl,
     methods: ["GET", "POST"],
   },
 });
@@ -69,6 +74,9 @@ app.use("/api/user", isAuth, userRoutes);
 app.use("/api/contact", isAuth, contactRoutes);
 app.use("/api/history", isAuth, historyRoutes);
 
+app.get("/test", (req, res) => {
+  res.send("hola world");
+});
 app.use((error, req, res, next) => {
   if (res.headersSent) {
     return next(error);
