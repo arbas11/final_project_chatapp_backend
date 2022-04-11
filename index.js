@@ -20,7 +20,7 @@ const { urlencoded } = require("express");
 
 const dbUrl = process.env.DB_URL;
 // const localDB = "mongodb://localhost:27017/chat_app_dibimbing";
-const orginProdUrl = "https://ngocech.herokuapp.com";
+const originProdUrl = "https://ngocech.herokuapp.com";
 // const originDevUrl = "http://localhost:3000";
 const originUrl = originProdUrl;
 
