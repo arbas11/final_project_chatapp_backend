@@ -33,7 +33,7 @@ app.use(isAuth);
 
 const io = new Server(server, {
   cors: {
-    origin: originUrl,
+    origin: "https://ngocech.herokuapp.com",
     methods: ["GET", "POST"],
   },
 });
