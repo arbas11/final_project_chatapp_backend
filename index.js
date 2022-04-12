@@ -21,7 +21,7 @@ const { urlencoded } = require("express");
 const prodDB = process.env.DB_URL;
 // const localDB = process.env.LOCAL_DB;
 
-const originProdUrl = "https://ngocech.herokuapp.com/";
+const originProdUrl = "https://ngocech.herokuapp.com";
 // const originDevUrl = "http://localhost:3000";
 
 const dbUrl = prodDB;
@@ -33,7 +33,7 @@ app.use(cors());
 app.use(express.json());
 app.use(urlencoded({ extended: true }));
 app.use(isAuth);
-
+console.log(originUrl, "origin url:");
 const io = new Server(server, {
   cors: {
     origin: originUrl,
