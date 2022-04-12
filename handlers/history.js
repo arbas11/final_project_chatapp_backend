@@ -22,6 +22,7 @@ const addHistoryToContact = async (req, res, next) => {
   }
 };
 const addHistorySender = async (messageData) => {
+  console.log("hit me on history handler add history sender");
   try {
     const { owner, contact } = messageData;
     const contactToAdd = await Contact.findOne({
@@ -38,6 +39,7 @@ const addHistorySender = async (messageData) => {
   }
 };
 const addHistoryReceiver = async (messageData) => {
+  console.log("hit me on history handler add history receiver");
   try {
     const { owner, contact } = messageData;
     const contactToAdd = await Contact.findOne({
@@ -67,6 +69,7 @@ const addHistoryReceiver = async (messageData) => {
 //show one contact history:
 
 const showContactHistory = async (req, res, next) => {
+  console.log("hit me on history handler show histoy");
   const { userEmail, contactEmail } = req.body;
   await History.find({
     owner: userEmail,

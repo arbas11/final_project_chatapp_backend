@@ -70,7 +70,7 @@ const deleteOneContact = async (req, res, next) => {
   const { userEmail, contactEmail, contactId } = req.body;
   await Contact.findOneAndDelete({
     owner: userEmail,
-    contactNumber: contactEmail,
+    contactEmail: contactEmail,
   })
     .then((data) => {
       console.log(data);
@@ -84,7 +84,11 @@ const deleteOneContact = async (req, res, next) => {
     { userEmail: userEmail },
     { $pull: { contacts: contactId } }
   );
-  await History.deleteMany({ owner: userEmail, contact: contactEmail });
+  await History.deleteMany({ owner: userEmail, contact: contactEmail }).then(
+    (res) => {
+      console.log(res, "dari del contact");
+    }
+  );
 };
 //--------------------------------------------------------
 //update contact name

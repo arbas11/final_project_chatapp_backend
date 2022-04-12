@@ -38,8 +38,12 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-userSchema.methods.toggleIsOnline = function () {
-  this.isOnline = !this.isOnline;
+userSchema.methods.toggleLogout = function () {
+  this.isOnline = false;
+  return this.save();
+};
+userSchema.methods.toggleLogin = function () {
+  this.isOnline = true;
   return this.save();
 };
 const User = mongoose.model("User", userSchema);

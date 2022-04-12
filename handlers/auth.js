@@ -6,6 +6,7 @@ const userLogin = async (req, res) => {
   try {
     const user = await User.findOne({ userEmail: userEmail });
     if (user) {
+      user.toggleLogin();
       res.status(200).json(user);
     } else {
       const newUser = new User({
@@ -25,8 +26,7 @@ const userLogin = async (req, res) => {
 
 const userLogout = async (req, res) => {
   const { userEmail } = req.body;
-  await User.findOne({ userEmail: userEmail }).then((res) => {
-    res.toggleIsOnline();
-  });
+  const user = await User.findOne({ userEmail: userEmail });
+  user.toggleLogout();
 };
 module.exports = { userLogin, userLogout };
