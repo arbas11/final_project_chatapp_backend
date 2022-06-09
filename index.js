@@ -18,14 +18,14 @@ const isAuth = require("./middleware/auth");
 const { addHistoryReceiver, addHistorySender } = require("./handlers/history");
 const { urlencoded } = require("express");
 
-const prodDB = process.env.DB_URL;
-// const localDB = process.env.LOCAL_DB;
+// const prodDB = process.env.DB_URL;
+const localDB = "mongodb://localhost:27017/chat_app_dibimbing";
 
-const originProdUrl = "https://ngocech.herokuapp.com";
-// const originDevUrl = "http://localhost:3000";
+// const originProdUrl = "https://ngocech.herokuapp.com";
+const originDevUrl = "http://localhost:3000";
 
-const dbUrl = prodDB;
-const originUrl = originProdUrl;
+const dbUrl = localDB;
+const originUrl = originDevUrl;
 
 const PORT = process.env.PORT || 3001;
 
@@ -33,7 +33,7 @@ app.use(cors());
 app.use(express.json());
 app.use(urlencoded({ extended: true }));
 app.use(isAuth);
-console.log(originUrl, "origin url:");
+
 const io = new Server(server, {
   cors: {
     origin: originUrl,
